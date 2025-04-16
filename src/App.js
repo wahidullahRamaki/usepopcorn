@@ -305,6 +305,13 @@ getMovieDetail()
 
 },[SelectedId])
 
+
+useEffect(function(){
+
+  if(!title) return;
+  document.title = `Movie | ${title}`
+},[title])
+
   return <div className="details">
     {isloading ? <Loader/> :
     <>
