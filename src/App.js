@@ -96,19 +96,27 @@ function handleDeleteWatched (id) {
 setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
 }
   useEffect(function(){
-   
+ const controller = new AbortController();  
     async function fetchMovies() {
  try {  setIsLoading(true);
   setError("")
-    const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
-    if (!res.ok) throw new Error ("Somthing went wrong with fetching movies");
+    const res = await fetch(
+      `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+      {signal : controller.signal}
+    );
+    if (!res.ok) 
+      throw new Error ("Somthing went wrong with fetching movies");
     const data = await res.json();
     if (data.Response === 'false') throw new Error ('Movie not Found')
     setMovies(data.Search)
+  setError('')
     
   } catch(err){
       console.error(err.message);
-      setError(err.message)
+      if(err.message !== "AbortError"){
+        setError(err.message)
+      }
+     
     } finally{
       setIsLoading(false);
     }
@@ -120,6 +128,10 @@ setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
       return
     }
     fetchMovies();
+
+    return function(){
+      controller.abort();
+    }
    
   },[query]);
 
