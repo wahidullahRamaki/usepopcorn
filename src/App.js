@@ -55,7 +55,7 @@ const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "7ce6ded4";
 export default function App() {
-  const [query, setQuery] = useState("inception");
+  const [query, setQuery] = useState(" ");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading ,setIsLoading] =useState(false);
@@ -115,8 +115,9 @@ setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
   setError('')
     
   } catch(err){
-      console.error(err.message);
+      
       if(err.message !== "AbortError"){
+        console.log(err.message);
         setError(err.message)
       }
      
@@ -130,6 +131,8 @@ setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
       setError("")
       return
     }
+// this is to prevent the fetch from running when the query is empty
+    handleCloseMovie();
     fetchMovies();
 
     return function(){
@@ -315,7 +318,7 @@ function MovieDetail({SelectedId , onCloseMOvie, onAddWatched, watched}){
 
     if(e.code === 'Escape') {
       onCloseMOvie();
-    console.log('Close movie')}}
+  }}
 
   document.addEventListener('keydown', callback)
    
@@ -345,7 +348,7 @@ useEffect(function(){
 
   return function(){
     document.title = "usePopcorn";
-    console.log(`Clean up effect for movie ${title}`);
+    // console.log(`Clean up effect for movie ${title}`);
   }
 },[title])
 
