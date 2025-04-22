@@ -3,6 +3,7 @@ import { set } from "lodash";
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating"
 
+
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -95,6 +96,8 @@ function handleAddWatched(movie){
 function handleDeleteWatched (id) {
 setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
 }
+
+
   useEffect(function(){
  const controller = new AbortController();  
     async function fetchMovies() {
@@ -162,7 +165,7 @@ setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
               SelectedId={SelectedId} 
               onCloseMOvie={handleCloseMovie} 
               onAddWatched={handleAddWatched}
-              watched = {watched}/> ) :(
+              watched = {watched}/> ):(
           <>
           <WatchSummary watched={watched} />
           <WatchMoviesList watched={watched}
@@ -213,10 +216,11 @@ function Search({query, setQuery}) {
     />
   );
 }
+
 function NumResualt({ movies }) {
   return (
     <p className="num-results">
-      Found <strong>{movies.length}</strong> results
+      Found <strong>{movies?.length || 0}</strong> results
     </p>
   );
 }
@@ -286,11 +290,11 @@ function MovieDetail({SelectedId , onCloseMOvie, onAddWatched, watched}){
   const [movie , setMovie] = useState({});
   const [isloading ,setIsLoading] = useState(false);
   const [userRating ,setUserRating] = useState('');
-
   const isWatched = watched.map(movie=>movie.imdbID).includes(SelectedId)
   const watchedUserRating = watched.find( (movie)=>movie.imdbID=== SelectedId)?.userRating
   const {Title: title , Year: year , Poster: poster, RunTime : runtime , imdbRating , Plot: plot ,Released : released , Actors: actors , Director : direcrtor , Genre: genre,} = movie;
- function handleAdd(){
+
+  function handleAdd(){
   const runtimeNumber = Number(runtime?.split(" ")?.[0] || 0);
   const newWatchedMovie={
     imdbID : SelectedId,
@@ -302,10 +306,26 @@ function MovieDetail({SelectedId , onCloseMOvie, onAddWatched, watched}){
     userRating,
 
   };
-onAddWatched(newWatchedMovie)
-onCloseMOvie();
+    onAddWatched(newWatchedMovie)
+    onCloseMOvie();
  }
-useEffect(function(){
+ useEffect(function(){
+
+  function callback (e){
+
+    if(e.code === 'Escape') {
+      onCloseMOvie();
+    console.log('Close movie')}}
+
+  document.addEventListener('keydown', callback)
+   
+  return function(){
+  document.removeEventListener('keydown',callback)
+}}
+,[onCloseMOvie])
+
+
+ useEffect(function(){
 async function getMovieDetail (){
   setIsLoading(true);
   const res = await fetch(`http://www.omdbapi.com/?apikey=${KEY}&i=${SelectedId}`);
@@ -316,7 +336,7 @@ async function getMovieDetail (){
 getMovieDetail()
 
 },[SelectedId])
-
+ 
 
 useEffect(function(){
 
@@ -403,6 +423,7 @@ function WatchMoviesList({ watched, onDeleteWatched }) {
     </ul>
   );
 }
+
 function WatchedMovie({ movie , onDeleteWatched }) {
   return (
     <li>
@@ -413,17 +434,21 @@ function WatchedMovie({ movie , onDeleteWatched }) {
           <span>⭐️</span>
           <span>{movie.imdbRating}</span>
         </p>
+
         <p>
           <span>🌟</span>
           <span>{movie.userRating}</span>
         </p>
+
         <p> 
           <span>⏳</span>
           <span>{movie.runtime} min</span>
         </p>
+        
         <button className="btn-delete" onClick={()=>onDeleteWatched(movie.imdbID)}>
           x
         </button>
+        
       </div>
     </li>
   );
