@@ -27,13 +27,21 @@ function handleCloseMovie(){
 function handleAddWatched(movie){
    setWatched((watched)=>[...watched, movie]);
 
+  //  localStorage.setItem('watched', JSON.stringify([...watched, movie]));
+
 }
 
 function handleDeleteWatched (id) {
 setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
 }
 
+  useEffect(function(){
 
+    localStorage.setItem('watched', JSON.stringify(watched));
+  },[watched])
+
+
+  
   useEffect(function(){
  const controller = new AbortController();  
     async function fetchMovies() {
