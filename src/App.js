@@ -4,20 +4,27 @@ import { useEffect, useState } from "react";
 import StarRating from "./StarRating"
 import { use } from "react";
 
+
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 const KEY = "7ce6ded4";
 export default function App() {
   const [query, setQuery] = useState(" ");
   const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+
   const [isLoading ,setIsLoading] =useState(false);
   const [error, setError]= useState("")
   const tempQuery = 'interstellar';
   const [SelectedId , setSelectedId] = useState(null);
+  // const [watched, setWatched] = useState([]);
+
+  const [watched, setWatched] = useState(function(){
+    const stordValue= localStorage.getItem('watched');
+    return JSON.parse(stordValue);
+  });
 
 function handleSelectMovie(id){
-  setSelectedId((SelectedId)=>(id === SelectedId? null : id));
+  setSelectedId((SelectedId)=>(id === SelectedId? null : id))
 }
 
 function handleCloseMovie(){
@@ -41,7 +48,7 @@ setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
   },[watched])
 
 
-  
+
   useEffect(function(){
  const controller = new AbortController();  
     async function fetchMovies() {
