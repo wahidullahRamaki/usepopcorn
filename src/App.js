@@ -271,7 +271,16 @@ function MovieDetail({SelectedId , onCloseMOvie, onAddWatched, watched}){
   const watchedUserRating = watched.find( (movie)=>movie.imdbID=== SelectedId)?.userRating
   const {Title: title , Year: year , Poster: poster, RunTime : runtime , imdbRating , Plot: plot ,Released : released , Actors: actors , Director : direcrtor , Genre: genre,} = movie;
 
+  const countRef = useRef(0);
 
+  useEffect(function(){
+  //  if(userRating) countRef.current = countRef.current + 1 ;
+  // Both are the same
+  // countRef.current += 1;
+  if(userRating) countRef.current++ ;
+  },[userRating])
+
+ 
   // if (imdbRating>8) [isTop ,setIsTop]= useState(true);
   //if (imdbRating<8) return <p>greter for ever!</p>
 
@@ -298,6 +307,7 @@ console.log(isTop);
     imdbRating : Number(imdbRating),
     runtime: runtimeNumber,
     userRating,
+    countRatingDecision: countRef.current,
 
   };
     onAddWatched(newWatchedMovie)
