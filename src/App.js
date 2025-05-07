@@ -3,6 +3,7 @@ import { set } from "lodash";
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating"
 import { use } from "react";
+import { useMovies } from "./useMovies";
 
 
 const average = (arr) =>
@@ -10,13 +11,11 @@ const average = (arr) =>
 const KEY = "7ce6ded4";
 export default function App() {
   const [query, setQuery] = useState(" ");
-  const [movies, setMovies] = useState([]);
-
-  const [isLoading ,setIsLoading] =useState(false);
-  const [error, setError]= useState("")
   const tempQuery = 'interstellar';
   const [SelectedId , setSelectedId] = useState(null);
   // const [watched, setWatched] = useState([]);
+
+const {isLoading, movies, error}= useMovies(query)
 
   const [watched, setWatched] = useState(function(){
     const stordValue= localStorage.getItem('watched');
@@ -47,50 +46,6 @@ setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
     localStorage.setItem('watched', JSON.stringify(watched));
   },[watched])
 
-
-
-  useEffect(function(){
- const controller = new AbortController();  
-    async function fetchMovies() {
- try {  setIsLoading(true);
-  setError("")
-    const res = await fetch(
-      `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-      {signal : controller.signal}
-    );
-    if (!res.ok) 
-      throw new Error ("Somthing went wrong with fetching movies");
-    const data = await res.json();
-    if (data.Response === 'false') throw new Error ('Movie not Found')
-    setMovies(data.Search)
-  setError('')
-    
-  } catch(err){
-      
-      if(err.message !== "AbortError"){
-        console.log(err.message);
-        setError(err.message)
-      }
-     
-    } finally{
-      setIsLoading(false);
-    }
-      
-    }
-    if(query.length < 3){
-      setMovies([]);
-      setError("")
-      return
-    }
-// this is to prevent the fetch from running when the query is empty
-    handleCloseMovie();
-    fetchMovies();
-
-    return function(){
-      controller.abort();
-    }
-   
-  },[query]);
 
   // useEffect(function(){
   //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
