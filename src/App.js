@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating"
 import { use } from "react";
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalsorageState";
 
 
 const average = (arr) =>
@@ -17,10 +18,9 @@ export default function App() {
 
 const {isLoading, movies, error}= useMovies(query)
 
-  const [watched, setWatched] = useState(function(){
-    const stordValue= localStorage.getItem('watched');
-    return JSON.parse(stordValue);
-  });
+const [watched ,setWatched] = useLocalStorageState([],'watched')
+
+
 
 function handleSelectMovie(id){
   setSelectedId((SelectedId)=>(id === SelectedId? null : id))
@@ -41,11 +41,7 @@ function handleDeleteWatched (id) {
 setWatched( watched=>watched.filter(movie=>movie.imdbID !== id))
 }
 
-  useEffect(function(){
-
-    localStorage.setItem('watched', JSON.stringify(watched));
-  },[watched])
-
+  
 
   // useEffect(function(){
   //   fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
